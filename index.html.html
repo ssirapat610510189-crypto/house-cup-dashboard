@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <title>House Cup - Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#f6f8fc;
+      --panel:#ffffff;
+      --line:#e8edf5;
+      --txt:#020e2b;
+      --muted:#6b7280;
+      --iones:#bde5ff;
+      --viridian:#58cea5;
+      --astra:#c8aaff;
+      --forj:#dd4c4c;
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans Thai","Noto Sans",sans-serif;
+      background:var(--bg);
+      color:var(--txt);
+    }
+
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px 16px 40px;
+    }
+
+    /* Top bar */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 0 20px;
+      position:sticky;
+      top:0;
+      background:var(--bg);
+      z-index:10;
+    }
+
+    .brand{
+      font-weight:700;
+      font-size:20px;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .tab-btn{
+      border-radius:999px;
+      padding:8px 18px;
+      border:1px solid transparent;
+      background:#eef1f7;
+      font-size:14px;
+      cursor:pointer;
+    }
+    .tab-btn.active{
+      background:#111827;
+      color:#fff;
+      border-color:#111827;
+    }
+
+    /* Panels */
+    .panel{
+      background:var(--panel);
+      border-radius:24px;
+      padding:24px 24px 20px;
+      box-shadow:0 8px 24px rgba(15,23,42,.06);
+      border:1px solid #e5e7eb;
+    }
+
+    .panel-header{
+      margin-bottom:16px;
+    }
+    .panel-title{
+      font-weight:700;
+      font-size:18px;
+      margin-bottom:2px;
+    }
+    .panel-sub{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    /* Grid cards overview */
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+      margin-top:12px;
+    }
+
+    @media(max-width:768px){
+      .grid-2{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .house-card{
+      border-radius:var(--radius);
+      border:1px solid var(--line);
+      background:#fbfcff;
+      padding:20px 22px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:160px;
+    }
+
+    .house-card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .house-name{
+      font-weight:700;
+      font-size:16px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:#000;
+    }
+    .badge-rank{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
+      color:var(--muted);
+    }
+
+    .score-big{
+      font-size:56px;
+      font-weight:800;
+      letter-spacing:6px;
+      line-height:1;
+    }
+
+    .score-label{
+      margin-top:4px;
+      font-size:13px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .house-card-footer{
+      text-align:center;
+    }
+
+    /* small panels bottom */
+    .grid-bottom{
+      display:grid;
+      grid-template-columns:2fr 2fr;
+      gap:18px;
+      margin-top:18px;
+    }
+    @media(max-width:768px){
+      .grid-bottom{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .bottom-card{
+      border-radius:var(--radius);
+      border:1px solid var(--line);
+      background:#fbfcff;
+      padding:18px 22px;
+      font-size:14px;
+    }
+    .bottom-title{
+      font-weight:600;
+      margin-bottom:4px;
+    }
+    .bottom-sub{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .footer-note{
+      margin-top:10px;
+      font-size:11px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    /* ===== House detail view ===== */
+    .view{display:none;}
+    .view.active{display:block;}
+
+    .house-header-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .badge-total{
+      border-radius:999px;
+      padding:6px 14px;
+      background:#111827;
+      color:#fff;
+      font-size:13px;
+    }
+
+    .student-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+      gap:18px;
+    }
+
+    .student-card{
+      background:#fbfcff;
+      border-radius:var(--radius);
+      border:1px solid var(--line);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:230px;
+    }
+
+    .student-photo{
+      background:#f1f5f9;
+      height:120px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .student-body{
+      padding:10px 14px 14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      flex:1;
+    }
+
+    .student-name{
+      font-weight:600;
+      font-size:14px;
+    }
+
+    .student-meta{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
+      min-height:32px;
+    }
+
+    .student-score{
+      margin-top:10px;
+      font-size:34px;
+      font-weight:800;
+      text-align:center;
+    }
+
+    .student-score-label{
+      font-size:11px;
+      text-align:center;
+      color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">House Cup</div>
+      <nav class="tabs">
+        <button class="tab-btn active" data-target="overview">แดชบอร์ดรวม</button>
+        <button class="tab-btn" data-target="house-iones">Iones</button>
+        <button class="tab-btn" data-target="house-viridian">Viridian</button>
+        <button class="tab-btn" data-target="house-astra">Astra</button>
+        <button class="tab-btn" data-target="house-forj">Forj</button>
+      </nav>
+    </header>
+
+    <!-- ============ OVERVIEW ============ -->
+    <section class="view active" id="view-overview">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">คะแนนรวม 4 บ้าน</div>
+          <div class="panel-sub">อัปเดตอัตโนมัติทุก 10 วินาที</div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Iones -->
+          <div class="house-card">
+            <div class="house-card-header">
+              <div class="house-name">
+                <span class="dot" style="background:var(--iones);"></span>
+                Iones
+              </div>
+              <div class="badge-rank" id="rank-iones">อันดับ 1</div>
+            </div>
+            <div class="house-card-footer">
+              <div class="score-big" id="score-iones" style="color:var(--iones);">0000</div>
+              <div class="score-label">รวมคะแนนทั้งหมด</div>
+            </div>
+          </div>
+
+          <!-- Viridian -->
+          <div class="house-card">
+            <div class="house-card-header">
+              <div class="house-name">
+                <span class="dot" style="background:var(--viridian);"></span>
+                Viridian
+              </div>
+              <div class="badge-rank" id="rank-viridian">อันดับ 2</div>
+            </div>
+            <div class="house-card-footer">
+              <div class="score-big" id="score-viridian" style="color:var(--viridian);">0000</div>
+              <div class="score-label">รวมคะแนนทั้งหมด</div>
+            </div>
+          </div>
+
+          <!-- Astra -->
+          <div class="house-card">
+            <div class="house-card-header">
+              <div class="house-name">
+                <span class="dot" style="background:var(--astra);"></span>
+                Astra
+              </div>
+              <div class="badge-rank" id="rank-astra">อันดับ 3</div>
+            </div>
+            <div class="house-card-footer">
+              <div class="score-big" id="score-astra" style="color:var(--astra);">0000</div>
+              <div class="score-label">รวมคะแนนทั้งหมด</div>
+            </div>
+          </div>
+
+          <!-- Forj -->
+          <div class="house-card">
+            <div class="house-card-header">
+              <div class="house-name">
+                <span class="dot" style="background:var(--forj);"></span>
+                Forj
+              </div>
+              <div class="badge-rank" id="rank-forj">อันดับ 4</div>
+            </div>
+            <div class="house-card-footer">
+              <div class="score-big" id="score-forj" style="color:var(--forj);">0000</div>
+              <div class="score-label">รวมคะแนนทั้งหมด</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-bottom">
+          <div class="bottom-card">
+            <div class="bottom-title">ประกาศ (เรียลไทม์)</div>
+            <div class="bottom-sub" id="announce-text">
+              ไม่มีประกาศล่าสุด
+            </div>
+          </div>
+          <div class="bottom-card">
+            <div class="bottom-title">สรุป</div>
+            <div class="bottom-sub">
+              แตะการ์ดเพื่อดูรายละเอียดของบ้านนั้น ๆ (ในอนาคตจะให้ลิงก์ไปหน้ารายละเอียดบ้าน)
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <span>อัปเดตทุก 10s • จะหยุดเมื่อหน้าไม่ได้โฟกัส</span>
+          <span id="clock-text"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HOUSE DETAIL TEMPLATES ============ -->
+    <!-- Iones -->
+    <section class="view" id="view-house-iones">
+      <div class="panel">
+        <div class="house-header-row">
+          <button class="tab-btn" onclick="switchView('overview')">← ย้อนกลับ</button>
+          <div class="house-name">
+            <span class="dot" style="background:var(--iones);"></span> Iones
+          </div>
+          <span class="badge-total">คะแนนรวม: <span id="detail-total-iones">0</span></span>
+        </div>
+
+        <div class="student-grid" id="grid-iones"></div>
+      </div>
+    </section>
+
+    <!-- Viridian -->
+    <section class="view" id="view-house-viridian">
+      <div class="panel">
+        <div class="house-header-row">
+          <button class="tab-btn" onclick="switchView('overview')">← ย้อนกลับ</button>
+          <div class="house-name">
+            <span class="dot" style="background:var(--viridian);"></span> Viridian
+          </div>
+          <span class="badge-total">คะแนนรวม: <span id="detail-total-viridian">0</span></span>
+        </div>
+
+        <div class="student-grid" id="grid-viridian"></div>
+      </div>
+    </section>
+
+    <!-- Astra -->
+    <section class="view" id="view-house-astra">
+      <div class="panel">
+        <div class="house-header-row">
+          <button class="tab-btn" onclick="switchView('overview')">← ย้อนกลับ</button>
+          <div class="house-name">
+            <span class="dot" style="background:var(--astra);"></span> Astra
+          </div>
+          <span class="badge-total">คะแนนรวม: <span id="detail-total-astra">0</span></span>
+        </div>
+
+        <div class="student-grid" id="grid-astra"></div>
+      </div>
+    </section>
+
+    <!-- Forj -->
+    <section class="view" id="view-house-forj">
+      <div class="panel">
+        <div class="house-header-row">
+          <button class="tab-btn" onclick="switchView('overview')">← ย้อนกลับ</button>
+          <div class="house-name">
+            <span class="dot" style="background:var(--forj);"></span> Forj
+          </div>
+          <span class="badge-total">คะแนนรวม: <span id="detail-total-forj">0</span></span>
+        </div>
+
+        <div class="student-grid" id="grid-forj"></div>
+      </div>
+    </section>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import {
+    getFirestore, collection, onSnapshot, doc
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  // ===== Firebase config ของโปรเจกต์พี่ =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyDpOhgrbmwyJHIie-1_1ymqDEmUh2FlxqI",
+    authDomain: "kl-house-cup.firebaseapp.com",
+    projectId: "kl-house-cup",
+    storageBucket: "kl-house-cup.firebasestorage.app",
+    messagingSenderId: "1036003373032",
+    appId: "1:1036003373032:web:6d9ab3f4d9db366990fe5d",
+    measurementId: "G-WW0ND7G6J5"
+  };
+
+  // เริ่มใช้ Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ====== สลับแท็บหน้าเว็บ ======
+  const tabButtons = document.querySelectorAll(".tab-btn[data-target]");
+
+  tabButtons.forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const target = btn.dataset.target;
+      switchView(target);
+    });
+  });
+
+  function switchView(target){
+    tabButtons.forEach(b=>{
+      b.classList.toggle("active", b.dataset.target === target);
+    });
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+
+    if(target === "overview"){
+      document.getElementById("view-overview").classList.add("active");
+    }else{
+      document.getElementById("view-" + target).classList.add("active");
+      const houseKey = target.replace("house-","");
+      renderHouseDetail(houseKey);
+    }
+  }
+window.switchView = switchView;
+  // ====== เก็บข้อมูลแต่ละบ้านในตัวแปร ======
+  const houseData = {
+    iones: { total:0, students:[] },
+    viridian: { total:0, students:[] },
+    astra: { total:0, students:[] },
+    forj: { total:0, students:[] }
+  };
+
+  // ====== ดึง students realtime จาก Firestore ======
+  const studentsRef = collection(db,"students");
+  onSnapshot(studentsRef, (snap)=>{
+    // reset
+    Object.keys(houseData).forEach(h=>{
+      houseData[h].total = 0;
+      houseData[h].students = [];
+    });
+
+    snap.forEach(docSnap=>{
+      const st = docSnap.data();
+      const h = st.house;
+      if(!houseData[h]) return;
+
+      const score = st.score || 0;
+      houseData[h].students.push({
+        id: docSnap.id,
+        name: st.name,
+        meta: st.subtitle,
+        score,
+        photoURL: st.photoURL || ""
+      });
+      houseData[h].total += score;
+    });
+
+    renderOverview();
+    // ถ้าอยู่หน้า house ใดอยู่ ให้ refresh หน้านั้นด้วย
+    const active = document.querySelector(".view.active");
+    if(active && active.id.startsWith("view-house-")){
+      const key = active.id.replace("view-house-","");
+      renderHouseDetail(key);
+    }
+  });
+
+  // ====== ดึงประกาศ realtime ======
+  const metaRef = doc(db,"meta","general");
+  onSnapshot(metaRef,(snap)=>{
+    if(snap.exists()){
+      document.getElementById("announce-text").textContent =
+        snap.data().announcement || "ไม่มีประกาศล่าสุด";
+    }
+  });
+
+  // ====== แสดงผลหน้ารวม 4 บ้าน ======
+  function renderOverview(){
+    const totals = {};
+    ["iones","viridian","astra","forj"].forEach(h=>{
+      totals[h] = houseData[h].total;
+    });
+
+    const ranking = Object.entries(totals)
+      .sort((a,b)=>b[1]-a[1])
+      .map(([key],idx)=>({key, rank:idx+1}));
+
+    const rankMap = {};
+    ranking.forEach(r=> rankMap[r.key] = r.rank);
+
+    function setHouse(houseKey, scoreId, rankId){
+      const total = houseData[houseKey].total || 0;
+      document.getElementById(scoreId).textContent =
+        total.toString().padStart(4,"0");
+      document.getElementById(rankId).textContent =
+        "อันดับ " + (rankMap[houseKey] || 4);
+    }
+
+    setHouse("iones","score-iones","rank-iones");
+    setHouse("viridian","score-viridian","rank-viridian");
+    setHouse("astra","score-astra","rank-astra");
+    setHouse("forj","score-forj","rank-forj");
+  }
+
+  // ====== แสดงรายชื่อนักเรียนในแต่ละบ้าน ======
+  function renderHouseDetail(houseKey){
+  const grid = document.getElementById("grid-" + houseKey);
+  const totalSpan = document.getElementById("detail-total-" + houseKey);
+
+  // ดึง list ของบ้านนั้น ๆ
+  const originalList = houseData[houseKey].students || [];
+
+  // ✅ 1. เรียงลำดับจากคะแนนมาก → น้อย
+  const list = [...originalList].sort((a, b) => (b.score || 0) - (a.score || 0));
+
+  grid.innerHTML = "";
+  let houseTotal = 0;
+
+  list.forEach((st, idx)=>{
+    houseTotal += st.score || 0;
+
+    const card = document.createElement("div");
+    card.className = "student-card";
+
+    const imgHTML = st.photoURL
+      ? `<img src="${st.photoURL}" alt="${st.name}"
+             style="width:100%;height:100%;object-fit:cover;border-radius:16px 16px 0 0;">`
+      : `รูปนักเรียน`;
+
+    card.innerHTML = `
+      <div class="student-photo">
+        ${imgHTML}
+      </div>
+      <div class="student-body">
+        <div>
+          <div class="student-name">
+            #${idx+1} — ${st.name}
+          </div>
+          <div class="student-meta">${st.meta || ""}</div>
+        </div>
+        <div>
+          <div class="student-score">${st.score || 0}</div>
+          <div class="student-score-label">คะแนนรวม</div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  totalSpan.textContent = houseTotal;
+}
+
+
+  // นาฬิกามุมล่างขวา
+  function tickClock(){
+    const now = new Date();
+    const t = now.toLocaleTimeString("th-TH",{hour12:false});
+    document.getElementById("clock-text").textContent = t;
+  }
+  tickClock();
+  setInterval(tickClock,1000);
+
+  // render รอบแรก (เผื่อ Firestore ยังไม่ตอบ)
+  renderOverview();
+</script>
+</body>
+</html>
